@@ -43,6 +43,12 @@ export const InlineCode = styled.code`
   background-color: ${themeGet('colors.neutral.muted')};
   border-radius: ${themeGet('radii.2')};
 `
+const colorMap = {
+  'token comment': '#747458',
+  'token function': '#cf3846',
+  'token parameter variable': '#277d7b',
+  'token assign-left variable': '#277d7b',
+}
 
 const MonoText = props => <Text sx={{fontFamily: 'mono', fontSize: 1}} {...props} />
 
@@ -113,9 +119,14 @@ function Code({className = '', prompt, children}) {
         <CodeBlock className={highlightClassName} style={style} code={code}>
           {tokens.map((line, i) => (
             <Box key={i} {...getLineProps({line, key: i})}>
-              {line.map((token, key) => (
-                <MonoText key={key} {...getTokenProps({token, key})} />
-              ))}
+              {line.map((token, key) => {
+                const tokenProps = getTokenProps({token, key})
+                const tokenStyle = colorMap[tokenProps.className]
+                  ? {...tokenProps.style, color: colorMap[tokenProps.className]}
+                  : tokenProps.style
+
+                return <MonoText key={key} {...tokenProps} style={tokenStyle} />
+              })}
             </Box>
           ))}
         </CodeBlock>
